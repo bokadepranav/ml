@@ -1,0 +1,60 @@
+Certainly, here's a line-by-line explanation of the code:
+
+```python
+import numpy as np
+import pandas as pd
+```
+These lines import the necessary libraries for numerical operations and data manipulation, namely NumPy and Pandas.
+
+```python
+data = pd.read_csv('./diabetes.csv')
+data.head()
+```
+This code reads a CSV file named 'diabetes.csv' into a pandas DataFrame called `data` and displays the first few rows of the DataFrame.
+
+```python
+data.isnull().sum()
+```
+This line checks for missing values in the DataFrame `data` and returns the sum of missing values in each column.
+
+```python
+# Replace zero values with mean values
+for column in data.columns[1:-3]:
+    data[column].replace(0, np.NaN, inplace=True)
+    data[column].fillna(round(data[column].mean(skipna=True)), inplace=True)
+data.head(10)
+```
+This part of the code iterates over columns (except the first and last three) in the DataFrame `data`. It replaces zero values with NaN (Not a Number) and then fills the NaN values with the mean of each column, rounded to the nearest integer.
+
+```python
+X = data.iloc[:, :8]  # Features
+Y = data.iloc[:, 8:]  # Predictor
+```
+These lines extract the features (X) and the target variable (Y) from the DataFrame `data`.
+
+```python
+# Perform Splitting
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
+```
+This section of the code splits the dataset into training and testing sets using the `train_test_split` function from scikit-learn. The test set will be 20% of the data, and the random_state is set to 0 for reproducibility.
+
+```python
+# KNN
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier()
+knn_fit = knn.fit(X_train, Y_train.values.ravel())
+knn_pred = knn_fit.predict(X_test)
+```
+These lines initialize and train a K-Nearest Neighbors (KNN) classifier on the training data (`X_train` and `Y_train`). It then uses the trained model to predict the target variable for the test data (`X_test`), and the predictions are stored in `knn_pred`.
+
+```python
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, accuracy_score
+print("Confusion Matrix")
+print(confusion_matrix(Y_test, knn_pred))
+print("Accuracy Score:", accuracy_score(Y_test, knn_pred))
+print("Recall Score:", recall_score(Y_test, knn_pred))
+print("F1 Score:", f1_score(Y_test, knn_pred))
+print("Precision Score:", precision_score(Y_test, knn_pred))
+```
+This part of the code calculates and prints various metrics, including the confusion matrix, accuracy score, recall score, F1 score, and precision score, for evaluating the performance of the KNN classifier on the test data.
